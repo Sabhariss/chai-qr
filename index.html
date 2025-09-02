@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>All Hail Chai ☕</title>
+  <meta name="description" content="Scan → land here → join Team 3 and sip that chai." />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet" />
+  <script>
+    // Tiny Tailwind shim for CDN build (ensures base styles)
+    window.tailwind = { config: { theme: { extend: {} } } };
+  </script>
+  <style>
+    .flip {
+      perspective: 1000px;
+    }
+    .flip-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .flipped .flip-inner { transform: rotateY(180deg); }
+    .flip-face {
+      position: absolute; inset: 0; backface-visibility: hidden;
+    }
+    .flip-back { transform: rotateY(180deg); }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-amber-50 to-orange-100 text-neutral-900">
+  <header class="max-w-5xl mx-auto px-6 pt-10 pb-6">
+    <div class="flex items-center justify-between gap-4">
+      <div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">All Hail Chai</h1>
+        <p class="text-sm text-neutral-600">Welcome! This page was opened from a QR code.
+          <span id="fromQR" class="hidden">(We see you 👀)</span>
+        </p>
+      </div>
+      <div id="teamPill" class="hidden shrink-0 rounded-full bg-green-100 text-green-700 px-3 py-1 text-sm font-semibold">
+        ✅ You’re in <span class="font-bold">Team 3</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6 pb-20">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <!-- Tile 1 -->
+      <button class="group relative overflow-hidden rounded-2xl border border-amber-200 bg-white shadow-sm hover:shadow-md transition p-6 text-left">
+        <div class="flex items-start gap-3">
+          <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100">🍵</span>
+          <div>
+            <h2 class="text-xl font-bold">All hail chai at Starbucks</h2>
+            <p class="mt-1 text-sm text-neutral-600">Order your favorite chai and raise the cup high. Respect the leaves. ☕️</p>
+          </div>
+        </div>
+      </button>
+
+      <!-- Tile 2: Petition / Auto-join Team 3 -->
+      <button id="tileJoin" class="relative overflow-hidden rounded-2xl border border-amber-200 bg-white shadow-sm hover:shadow-md transition p-6 text-left">
+        <div class="flex items-start gap-3">
+          <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100">📝</span>
+          <div>
+            <h2 id="joinTitle" class="text-xl font-bold">Petition to join Team 3</h2>
+            <p id="joinText" class="mt-1 text-sm text-neutral-600">Click to sign. (Instant acceptance, no forms.)</p>
+          </div>
+        </div>
+      </button>
+
+      <!-- Tile 3: Flip card -->
+      <div id="tileFlip" class="flip rounded-2xl border border-amber-200 bg-white shadow-sm hover:shadow-md transition">
+        <div class="flip-inner p-6">
+          <div class="flip-face">
+            <div class="flex items-start gap-3">
+              <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100">🎁</span>
+              <div>
+                <h2 class="text-xl font-bold">Win a week of chai</h2>
+                <p class="mt-1 text-sm text-neutral-600">Tap to flip this card for the fine print.</p>
+              </div>
+            </div>
+          </div>
+          <div class="flip-face flip-back">
+            <div class="flex items-start gap-3">
+              <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100">🎲</span>
+              <div>
+                <h2 class="text-xl font-bold">Lose a game with Team 3</h2>
+                <p class="mt-1 text-sm text-neutral-600">Give us a heads‑up beforehand. Tap to flip back.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tile 4 -->
+      <button id="tileMap" class="relative overflow-hidden rounded-2xl border border-amber-200 bg-white shadow-sm hover:shadow-md transition p-6 text-left">
+        <div class="flex items-start gap-3">
+          <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100">📍</span>
+          <div>
+            <h2 class="text-xl font-bold">Find the chai zone</h2>
+            <p class="mt-1 text-sm text-neutral-600">Head to our cafeteria’s Chai Zone and get energized ☕⚡</p>
+          </div>
+        </div>
+      </button>
+    </div>
+
+    <p class="mt-8 text-xs text-neutral-500">Pro tip: Share this link with your squad or print its QR. Chai > everything.
+    </p>
+  </main>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 pointer-events-none opacity-0 transition-opacity">
+    <div class="rounded-xl bg-neutral-900 text-white px-4 py-3 text-sm shadow-lg">Action completed</div>
+  </div>
+
+  <script>
+    const qs = new URLSearchParams(location.search);
+    const fromQR = document.getElementById('fromQR');
+    if (qs.has('src')) fromQR.classList.remove('hidden');
+
+    const toast = (msg) => {
+      const t = document.getElementById('toast');
+      t.querySelector('div').textContent = msg;
+      t.style.opacity = '1';
+      setTimeout(() => (t.style.opacity = '0'), 1600);
+    };
+
+    // Team 3 membership via localStorage
+    const TEAM_KEY = 'chai-team';
+    const isTeam3 = () => localStorage.getItem(TEAM_KEY) === '3';
+    const setTeam3 = () => localStorage.setItem(TEAM_KEY, '3');
+
+    const teamPill = document.getElementById('teamPill');
+    const reflectTeam = () => {
+      if (isTeam3()) teamPill.classList.remove('hidden');
+    };
+
+    reflectTeam();
+
+    // Tile 2: Petition / Auto-join
+    const tileJoin = document.getElementById('tileJoin');
+    const joinTitle = document.getElementById('joinTitle');
+    const joinText  = document.getElementById('joinText');
+
+    const applyJoinedCopy = () => {
+      joinTitle.textContent = 'Boycott your game — joined Team 3';
+      joinText.textContent  = 'You were auto‑added to Team 3. Welcome aboard.';
+    };
+
+    if (isTeam3()) applyJoinedCopy();
+
+    tileJoin.addEventListener('click', () => {
+      setTeam3();
+      applyJoinedCopy();
+      reflectTeam();
+      toast('You are now in Team 3!');
+    });
+
+    // Tile 3: Flip behaviour
+    const tileFlip = document.getElementById('tileFlip');
+    tileFlip.addEventListener('click', () => {
+      tileFlip.classList.toggle('flipped');
+    });
+
+    // Tile 4: Map nudge (you can wire this to a real map link)
+    const tileMap = document.getElementById('tileMap');
+    tileMap.addEventListener('click', () => {
+      // Example: open your cafeteria map or directions
+      // Replace URL below with a real map link (Google Maps, Mapped floor, etc.)
+      const mapUrl = qs.get('map') || '#';
+      if (mapUrl && mapUrl !== '#') {
+        window.open(mapUrl, '_blank');
+      } else {
+        toast('Ask the front desk for “Chai Zone” directions ✨');
+      }
+    });
+  </script>
+</body>
+</html>
