@@ -107,21 +107,36 @@
             <div class="icon">🍵</div>
             <div>
               <h2>Team “Chai@Starbucks” — sip, win, repeat.</h2>
-              <p class="desc"> Order your favorite chai and raise the cup high. ☕️</p>
+              <p class="desc">Order your favorite chai and raise the cup high. ☕️</p>
             </div>
           </div>
         </button>
 
-        <!-- Tile 2: Boycott + auto-indicted -->
-        <button class="card as-btn" id="tileJoin">
-          <div class="row">
-            <div class="icon">📣</div>
-            <div>
-              <h2>Boycott your game to join Team 3</h2>
-              <p class="desc">You will be <em>auto-indicted</em>.</p>
+        <!-- Tile 2: Petition (front) -> Boycott (back) + auto-join -->
+        <div class="flip as-btn" id="tileJoinFlip">
+          <div class="flip-inner">
+            <!-- FRONT -->
+            <div class="flip-face">
+              <div class="row">
+                <div class="icon">📝</div>
+                <div>
+                  <h2>Petition to join Team 3</h2>
+                  <p class="desc">Tap here to know the procedure for the same.</p>
+                </div>
+              </div>
+            </div>
+            <!-- BACK -->
+            <div class="flip-face flip-back">
+              <div class="row">
+                <div class="icon">📣</div>
+                <div>
+                  <h2>Boycott your game to join Team 3</h2>
+                  <p class="desc">You will be <em>auto-indicted</em>.</p>
+                </div>
+              </div>
             </div>
           </div>
-        </button>
+        </div>
 
         <!-- Tile 3: Win a week of chai (front) / Lose a game (back) -->
         <div class="flip as-btn" id="tileFlip">
@@ -177,25 +192,38 @@
       setTimeout(() => t.style.opacity = '0', 1600);
     };
 
-    // Team 3 membership via localStorage (badge removed, behavior kept)
+    // Team 3 membership via localStorage
     const TEAM_KEY = 'chai-team';
     const isTeam3 = () => localStorage.getItem(TEAM_KEY) === '3';
     const setTeam3 = () => localStorage.setItem(TEAM_KEY, '3');
 
-    // Tile 2 behavior: auto-join Team 3
-    const tileJoin = document.getElementById('tileJoin');
-    tileJoin.addEventListener('click', () => {
-      setTeam3();
-      toast('You are now in Team 3!');
+    // --- Tile 2: flip + auto-join on first flip to back ---
+    const tileJoinFlip = document.getElementById('tileJoinFlip');
+    let hasJoinedViaFlip = false;
+
+    // If already Team 3 from before, start with back face visible
+    if (isTeam3()) {
+      tileJoinFlip.classList.add('flipped');
+      hasJoinedViaFlip = true; // don't re-toast
+    }
+
+    tileJoinFlip.addEventListener('click', () => {
+      tileJoinFlip.classList.toggle('flipped');
+      const nowBackFaceVisible = tileJoinFlip.classList.contains('flipped');
+      if (nowBackFaceVisible && !hasJoinedViaFlip && !isTeam3()) {
+        setTeam3();
+        hasJoinedViaFlip = true;
+        toast('You are now in Team 3!');
+      }
     });
 
-    // Tile 3: flip
+    // --- Tile 3: flip card ---
     const tileFlip = document.getElementById('tileFlip');
     tileFlip.addEventListener('click', () => {
       tileFlip.classList.toggle('flipped');
     });
 
-    // Tile 4: Map link via ?map=
+    // --- Tile 4: Map link via ?map= ---
     const tileMap = document.getElementById('tileMap');
     tileMap.addEventListener('click', () => {
       const mapUrl = qs.get('map') || '#';
@@ -208,6 +236,3 @@
   </script>
 </body>
 </html>
-
-
-
