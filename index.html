@@ -7,21 +7,21 @@
   <meta name="description" content="Scan → land here → join Team 3 and sip that chai." />
   <style>
     :root{
-      /* Strong green background */
-      --bg:#88e79e;
-      --text:#101410;
-      --muted:#2c3a33;
-      --card:#ffffff;
-      --card-border:#e8f5ea;
-      --accent:#0e8f6f;
-      --shadow:0 8px 24px rgba(0,0,0,.10);
+      /* === Dark theme colors === */
+      --bg:#000000;             /* page background (black) */
+      --text:#f3f4f6;           /* main text (near-white) */
+      --muted:#cbd5e1;          /* secondary text */
+      --card:#111418;           /* card background (dark) */
+      --card-border:#22262b;    /* card border */
+      --accent:#19c37d;         /* accent green */
+      --shadow:0 10px 30px rgba(0,0,0,.4);
       --radius:18px;
       --gap:22px;
 
-      /* 🔧 set this to your logo file name (e.g., logo.png) */
+      /* Watermark (disabled by default on black) */
       --logo-url: url('logo.png');
-      --logo-opacity: .07;  /* make higher for stronger watermark */
-      --logo-size: 520px;   /* change to fit */
+      --logo-opacity: 0;        /* set to .05–.12 if you still want a faint bg watermark */
+      --logo-size: 520px;
     }
 
     *{box-sizing:border-box}
@@ -31,18 +31,23 @@
       font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
     }
 
-    /* subtle centered logo watermark */
+    /* Optional centered watermark (currently hidden via --logo-opacity:0) */
     body::before{
       content:"";
       position:fixed; inset:0; pointer-events:none;
       background: var(--logo-url) center/var(--logo-size) no-repeat;
       opacity: var(--logo-opacity);
-      mix-blend-mode: multiply;
+      mix-blend-mode: lighten; /* looks nice on dark bg if enabled */
     }
 
     .container{max-width:1100px; margin:0 auto; padding:36px 22px 80px}
-    h1{margin:0 0 6px; font-weight:900; letter-spacing:.2px; font-size:clamp(30px, 5vw, 46px)}
-    .subtle{color:#163c2d; opacity:.85; font-size:14px}
+
+    h1{
+      margin:0 0 6px; font-weight:900; letter-spacing:.2px;
+      font-size:clamp(30px, 5vw, 46px);
+      color:#f9fafb;
+    }
+    .subtle{color:var(--muted); font-size:14px}
 
     .grid{
       display:grid; gap:var(--gap);
@@ -58,16 +63,21 @@
       border-radius:var(--radius); box-shadow:var(--shadow);
       padding:20px; transition:transform .18s ease, box-shadow .18s ease;
     }
-    .card:hover,.flip:hover{ transform:translateY(-2px); box-shadow:0 14px 28px rgba(0,0,0,.12); }
+    .card:hover,.flip:hover{
+      transform:translateY(-2px);
+      box-shadow:0 18px 36px rgba(0,0,0,.5);
+    }
 
     .as-btn{ cursor:pointer; text-align:left; }
     .row{ display:flex; gap:14px; align-items:flex-start; }
+
     .icon{
       flex:0 0 50px; height:50px; display:grid; place-items:center;
-      border-radius:14px; background:#fff5d7; font-size:22px; border:1px solid #f6e7b6;
+      border-radius:14px; background:#1f2937; font-size:22px; border:1px solid #2a3441;
+      color:#e5e7eb;
     }
-    h2{ margin:0; font-size:22px; font-weight:900; letter-spacing:.2px }
-    .desc{ margin:6px 0 0; color:#3d524a; font-size:15px }
+    h2{ margin:0; font-size:22px; font-weight:900; letter-spacing:.2px; color:#eaf2ee }
+    .desc{ margin:6px 0 0; color:#cbd5e1; font-size:15px }
 
     /* Flip card */
     .flip{ perspective:1000px; padding:0; }
@@ -83,9 +93,19 @@
     /* Toast */
     #toast{
       position:fixed; left:50%; bottom:22px; transform:translateX(-50%);
-      background:#101410; color:#fff; padding:10px 14px; border-radius:12px;
+      background:#0b0f12; color:#fff; padding:10px 14px; border-radius:12px;
       box-shadow:var(--shadow); opacity:0; transition:opacity .25s ease;
       font-size:14px; pointer-events:none;
+      border:1px solid #1f2937;
+    }
+
+    /* Top-right logo */
+    .brand{
+      display:flex; align-items:center; gap:10px;
+    }
+    .brand-logo{
+      width:auto; height:48px; object-fit:contain;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,.6));
     }
   </style>
 </head>
@@ -96,12 +116,16 @@
         <h1>Starbucks menu: Chai only</h1>
         <p class="subtle">Welcome! You have made some good for the day.</p>
       </div>
-      <!-- Team pill removed per request -->
+
+      <!-- Logo in the top-right -->
+      <div class="brand">
+        <img src="logo.png" alt="Event Logo" class="brand-logo">
+      </div>
     </header>
 
     <main>
       <div class="grid">
-        <!-- Tile 1: Chai@Starbucks punchline -->
+        <!-- Tile 1 -->
         <button class="card as-btn" id="tile1">
           <div class="row">
             <div class="icon">🍵</div>
@@ -120,8 +144,8 @@
               <div class="row">
                 <div class="icon">📝</div>
                 <div>
-                  <h2>Boycott your game to join Team 3</h2>
-                  <p class="desc">You will be <em>auto-indicted</em></p>
+                  <h2>Petition to join Team 3</h2>
+                  <p class="desc">Tap here to know the procedure for the same.</p>
                 </div>
               </div>
             </div>
@@ -130,15 +154,15 @@
               <div class="row">
                 <div class="icon">📣</div>
                 <div>
-                  <h2>Petition to join Team 3</h2>
-                  <p class="desc">Tap here to know the procedure for the same.</p>
+                  <h2>Boycott your game to join Team 3</h2>
+                  <p class="desc">You will be <em>auto-indicted</em></p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Tile 3: Win a week of chai (front) / Lose a game (back) -->
+        <!-- Tile 3 -->
         <div class="flip as-btn" id="tileFlip">
           <div class="flip-inner">
             <!-- FRONT -->
@@ -164,7 +188,7 @@
           </div>
         </div>
 
-        <!-- Tile 4: Map -->
+        <!-- Tile 4 -->
         <button class="card as-btn" id="tileMap">
           <div class="row">
             <div class="icon">📍</div>
@@ -197,11 +221,10 @@
     const isTeam3 = () => localStorage.getItem(TEAM_KEY) === '3';
     const setTeam3 = () => localStorage.setItem(TEAM_KEY, '3');
 
-    // --- Tile 2: flip + auto-join on first flip to back ---
+    // Tile 2: flip + auto-join on first flip to back
     const tileJoinFlip = document.getElementById('tileJoinFlip');
     let hasJoinedViaFlip = false;
 
-    // If already Team 3 from before, start with back face visible
     if (isTeam3()) {
       tileJoinFlip.classList.add('flipped');
       hasJoinedViaFlip = true; // don't re-toast
@@ -217,13 +240,13 @@
       }
     });
 
-    // --- Tile 3: flip card ---
+    // Tile 3: flip
     const tileFlip = document.getElementById('tileFlip');
     tileFlip.addEventListener('click', () => {
       tileFlip.classList.toggle('flipped');
     });
 
-    // --- Tile 4: Map link via ?map= ---
+    // Tile 4: Map link via ?map=
     const tileMap = document.getElementById('tileMap');
     tileMap.addEventListener('click', () => {
       const mapUrl = qs.get('map') || '#';
@@ -236,5 +259,3 @@
   </script>
 </body>
 </html>
-
-
