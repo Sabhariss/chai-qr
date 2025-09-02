@@ -7,83 +7,86 @@
   <meta name="description" content="Scan → land here → join Team 3 and sip that chai." />
   <style>
     :root{
-      --bg:#e8f7ea;        /* light green page background */
-      --text:#111;
-      --muted:#5f6b6b;
+      /* Strong green background */
+      --bg:#88e79e;
+      --text:#101410;
+      --muted:#2c3a33;
       --card:#ffffff;
-      --card-border:#d6e5d8;
-      --accent:#10a37f;    /* green accent */
-      --shadow:0 6px 20px rgba(0,0,0,.08);
-      --radius:16px;
-      --gap:18px;
+      --card-border:#e8f5ea;
+      --accent:#0e8f6f;
+      --shadow:0 8px 24px rgba(0,0,0,.10);
+      --radius:18px;
+      --gap:22px;
+
+      /* 🔧 set this to your logo file name (e.g., logo.png) */
+      --logo-url: url('logo.png');
+      --logo-opacity: .07;  /* make higher for stronger watermark */
+      --logo-size: 520px;   /* change to fit */
     }
+
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0; background:var(--bg); color:var(--text);
-      font:16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji";
-    }
-    .container{max-width:1000px; margin:0 auto; padding:28px 20px 80px}
-    h1{
-      margin:0 0 6px; font-weight:800; letter-spacing:.2px;
-      font-size:clamp(28px, 4vw, 40px);
-    }
-    .subtle{color:var(--muted); font-size:14px}
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      background:#e9fbf3; color:#0e7a62; border:1px solid #c9f1e3;
-      padding:6px 10px; border-radius:999px; font-weight:700; font-size:14px;
+      font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
     }
 
-    /* Grid of tiles */
+    /* subtle centered logo watermark */
+    body::before{
+      content:"";
+      position:fixed; inset:0; pointer-events:none;
+      background: var(--logo-url) center/var(--logo-size) no-repeat;
+      opacity: var(--logo-opacity);
+      mix-blend-mode: multiply;
+    }
+
+    .container{max-width:1100px; margin:0 auto; padding:36px 22px 80px}
+    h1{margin:0 0 6px; font-weight:900; letter-spacing:.2px; font-size:clamp(30px, 5vw, 46px)}
+    .subtle{color:#163c2d; opacity:.85; font-size:14px}
+
     .grid{
       display:grid; gap:var(--gap);
       grid-template-columns: 1fr;
-      margin-top:20px;
+      margin-top:22px;
     }
-    @media (min-width:680px){
+    @media (min-width:860px){
       .grid{ grid-template-columns: 1fr 1fr; }
     }
 
-    /* Card / tile base */
-    .card, .flip{
+    .card,.flip{
       background:var(--card); border:1px solid var(--card-border);
       border-radius:var(--radius); box-shadow:var(--shadow);
-      padding:18px; transition:transform .2s ease, box-shadow .2s ease;
+      padding:20px; transition:transform .18s ease, box-shadow .18s ease;
     }
-    .card:hover, .flip:hover{ transform:translateY(-2px); box-shadow:0 10px 26px rgba(0,0,0,.1); }
-    .row{ display:flex; gap:12px; align-items:flex-start; }
+    .card:hover,.flip:hover{ transform:translateY(-2px); box-shadow:0 14px 28px rgba(0,0,0,.12); }
+
+    .as-btn{ cursor:pointer; text-align:left; }
+    .row{ display:flex; gap:14px; align-items:flex-start; }
     .icon{
-      flex:0 0 42px; height:42px; display:grid; place-items:center;
-      border-radius:12px; background:#ecfdf5; font-size:20px;
+      flex:0 0 50px; height:50px; display:grid; place-items:center;
+      border-radius:14px; background:#fff5d7; font-size:22px; border:1px solid #f6e7b6;
     }
-    h2{ margin:0; font-size:20px; font-weight:800; }
-    .desc{ margin:6px 0 0; color:var(--muted); font-size:14px; }
+    h2{ margin:0; font-size:22px; font-weight:900; letter-spacing:.2px }
+    .desc{ margin:6px 0 0; color:#3d524a; font-size:15px }
 
     /* Flip card */
     .flip{ perspective:1000px; padding:0; }
     .flip-inner{
-      position:relative; height:100%; min-height:120px;
+      position:relative; min-height:126px;
       transform-style:preserve-3d; transition:transform .6s ease;
-      padding:18px;
+      padding:20px;
     }
-    .flip-face{
-      position:absolute; inset:0; padding:18px;
-      backface-visibility:hidden;
-    }
+    .flip-face{ position:absolute; inset:0; padding:20px; backface-visibility:hidden; }
     .flip-back{ transform:rotateY(180deg); }
     .flipped .flip-inner{ transform:rotateY(180deg); }
 
     /* Toast */
     #toast{
       position:fixed; left:50%; bottom:22px; transform:translateX(-50%);
-      background:#111; color:#fff; padding:10px 14px; border-radius:12px;
+      background:#101410; color:#fff; padding:10px 14px; border-radius:12px;
       box-shadow:var(--shadow); opacity:0; transition:opacity .25s ease;
       font-size:14px; pointer-events:none;
     }
-
-    /* Buttons look like cards but clickable */
-    .as-btn{ cursor:pointer; text-align:left; }
   </style>
 </head>
 <body>
@@ -91,47 +94,49 @@
     <header style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
       <div>
         <h1>All Hail Chai</h1>
-        <p class="subtle">Welcome! This page was opened from a QR code. <span id="fromQR" style="display:none">(We see you 👀)</span></p>
+        <p class="subtle">Welcome! This page was opened from a QR code.</p>
       </div>
-      <div id="teamPill" class="pill" style="display:none">✅ You’re in <strong>Team 3</strong></div>
+      <!-- Team pill removed per request -->
     </header>
 
     <main>
       <div class="grid">
-        <!-- Tile 1 -->
+        <!-- Tile 1: Chai@Starbucks punchline -->
         <button class="card as-btn" id="tile1">
           <div class="row">
             <div class="icon">🍵</div>
             <div>
               <h2>All hail chai at Starbucks</h2>
-              <p class="desc">Order your favorite chai and raise the cup high. Respect the leaves. ☕️</p>
+              <p class="desc"><strong>Team “Chai@Starbucks” — sip, win, repeat.</strong> Order your favorite chai and raise the cup high. Respect the leaves. ☕️</p>
             </div>
           </div>
         </button>
 
-        <!-- Tile 2: Petition / Auto-join Team 3 -->
+        <!-- Tile 2: Boycott + auto-indicted -->
         <button class="card as-btn" id="tileJoin">
           <div class="row">
-            <div class="icon">📝</div>
+            <div class="icon">📣</div>
             <div>
-              <h2 id="joinTitle">Petition to join Team 3</h2>
-              <p class="desc" id="joinText">Click to sign. (Instant acceptance, no forms.)</p>
+              <h2>Boycott your game to join Team 3</h2>
+              <p class="desc">You will be <em>auto-indicted</em>.</p>
             </div>
           </div>
         </button>
 
-        <!-- Tile 3: Flip card -->
+        <!-- Tile 3: Win a week of chai (front) / Lose a game (back) -->
         <div class="flip as-btn" id="tileFlip">
           <div class="flip-inner">
+            <!-- FRONT -->
             <div class="flip-face">
               <div class="row">
                 <div class="icon">🎁</div>
                 <div>
                   <h2>Win a week of chai</h2>
-                  <p class="desc">Tap to flip this card for the fine print.</p>
+                  <p class="desc">Tap to get the secret on earning the reward.</p>
                 </div>
               </div>
             </div>
+            <!-- BACK -->
             <div class="flip-face flip-back">
               <div class="row">
                 <div class="icon">🎲</div>
@@ -144,7 +149,7 @@
           </div>
         </div>
 
-        <!-- Tile 4 -->
+        <!-- Tile 4: Map -->
         <button class="card as-btn" id="tileMap">
           <div class="row">
             <div class="icon">📍</div>
@@ -164,8 +169,6 @@
 
   <script>
     const qs = new URLSearchParams(location.search);
-    const fromQR = document.getElementById('fromQR');
-    if (qs.has('src')) fromQR.style.display = 'inline';
 
     const toast = (msg) => {
       const t = document.getElementById('toast');
@@ -174,40 +177,25 @@
       setTimeout(() => t.style.opacity = '0', 1600);
     };
 
-    // Team 3 membership via localStorage
+    // Team 3 membership via localStorage (badge removed, behavior kept)
     const TEAM_KEY = 'chai-team';
     const isTeam3 = () => localStorage.getItem(TEAM_KEY) === '3';
     const setTeam3 = () => localStorage.setItem(TEAM_KEY, '3');
 
-    const teamPill = document.getElementById('teamPill');
-    const reflectTeam = () => { if (isTeam3()) teamPill.style.display = 'inline-flex'; };
-    reflectTeam();
-
-    // Tile 2: Petition / Auto-join
+    // Tile 2 behavior: auto-join Team 3
     const tileJoin = document.getElementById('tileJoin');
-    const joinTitle = document.getElementById('joinTitle');
-    const joinText  = document.getElementById('joinText');
-
-    const applyJoinedCopy = () => {
-      joinTitle.textContent = 'Boycott your game — joined Team 3';
-      joinText.textContent  = 'You were auto-added to Team 3. Welcome aboard.';
-    };
-    if (isTeam3()) applyJoinedCopy();
-
     tileJoin.addEventListener('click', () => {
       setTeam3();
-      applyJoinedCopy();
-      reflectTeam();
       toast('You are now in Team 3!');
     });
 
-    // Tile 3: Flip behaviour
+    // Tile 3: flip
     const tileFlip = document.getElementById('tileFlip');
     tileFlip.addEventListener('click', () => {
       tileFlip.classList.toggle('flipped');
     });
 
-    // Tile 4: Map nudge (wire to a real map link via ?map=)
+    // Tile 4: Map link via ?map=
     const tileMap = document.getElementById('tileMap');
     tileMap.addEventListener('click', () => {
       const mapUrl = qs.get('map') || '#';
